@@ -8,3 +8,4 @@ class CustomUser(AbstractUser):
     ]
     
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='seeker')
+    company = models.ForeignKey("api.Company", on_delete=models.SET_NULL, null=True, blank=True, related_name="employees")

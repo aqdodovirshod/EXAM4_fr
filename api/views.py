@@ -62,7 +62,10 @@ class VacancyListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         if self.request.user.role != 'employer':
             raise PermissionDenied("Only employers can create vacancies")
-        serializer.save(author=self.request.user)
+        company = self.request.user.company  
+        if not company:
+            raise PermissionDenied("Employer must be linked to a company")
+        serializer.save(author=self.request.user, company=company)
 
 
 class VacancyRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):

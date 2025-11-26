@@ -14,19 +14,14 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class VacancySerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True)
-    company_id = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(), source="company", write_only=True
-    )
     author = serializers.StringRelatedField(read_only=True)
     salary_display = serializers.SerializerMethodField()
-
     class Meta:
         model = Vacancy
         fields = [
             "id",
             "title",
             "company",
-            "company_id",
             "location",
             "description",
             "responsibilities",
