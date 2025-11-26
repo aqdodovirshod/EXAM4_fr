@@ -62,10 +62,7 @@ class VacancyListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         if self.request.user.role != 'employer':
             raise PermissionDenied("Only employers can create vacancies")
-        company = self.request.user.company  
-        if not company:
-            raise PermissionDenied("Employer must be linked to a company")
-        serializer.save(author=self.request.user, company=company)
+        serializer.save(author=self.request.user)
 
 
 class VacancyRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
@@ -156,3 +153,9 @@ class FavoriteVacancyToggleView(generics.GenericAPIView):
         else:
             FavoriteVacancy.objects.create(user=request.user, vacancy=vacancy)
             return Response({"message": "Added to favorites"}, status=status.HTTP_201_CREATED)
+        
+
+class CompanyListView(generics.ListAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanyWithVacanciesSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
