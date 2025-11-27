@@ -155,7 +155,7 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
 
     def get_applications(self, obj):
         qs = Application.objects.filter(vacancy__author=obj)
-        return ApplicationSerializer(qs, many=True).data
+        return ApplicationCompactSerializer(qs, many=True).data
 
 
 class SeekerProfileSerializer(serializers.ModelSerializer):
