@@ -133,6 +133,13 @@ class FavoriteVacancySerializer(serializers.ModelSerializer):
         fields = ["id", "user", "vacancy", "vacancy_id", "added_at"]
 
 
+class FavoriteListSerializer(serializers.ModelSerializer):
+    vacancy = VacancySerializer(read_only=True)
+    class Meta:
+        model = FavoriteVacancy
+        fields = ["id", "vacancy", "added_at"]
+
+
 class FavoriteToggleResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
 

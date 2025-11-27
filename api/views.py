@@ -16,6 +16,7 @@ from .serializers import (
     ResumeSerializer, 
     ApplicationSerializer,
     FavoriteToggleResponseSerializer,
+    FavoriteListSerializer,
     CompanyWithVacanciesSerializer,
     EmployerProfileSerializer,
     SeekerProfileSerializer,
@@ -158,6 +159,13 @@ class FavoriteVacancyToggleView(generics.GenericAPIView):
             FavoriteVacancy.objects.create(user=request.user, vacancy=vacancy)
             return Response({"message": "Added to favorites"}, status=status.HTTP_201_CREATED)
         
+
+class FavoriteVacancyListView(generics.ListAPIView):
+    serializer_class = FavoriteListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return FavoriteVacancy.objects.filter(user=self.request.user)
 
 class CompanyListView(generics.ListAPIView):
     queryset = Company.objects.all()

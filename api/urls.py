@@ -6,6 +6,7 @@ from .views import (
     ResumeListCreateView,
     ResumeRetrieveUpdateDeleteView,
     ApplicationCreateView,
+    FavoriteVacancyListView,
     FavoriteVacancyToggleView,
     CompanyDetailWithVacanciesView,
     CompanyListView,
@@ -23,6 +24,7 @@ urlpatterns = [
 
     path("vacancies/<int:vacancy_id>/apply/", ApplicationCreateView.as_view(), name="application-create"),
     path("vacancies/<int:vacancy_id>/favorite/", FavoriteVacancyToggleView.as_view(), name="favorite-toggle"),
+    path("favorites/", FavoriteVacancyListView.as_view(), name="favorite-list"),
 
     path("companies/", CompanyListView.as_view(), name="company-list"),
     path("companies/create/", CompanyCreateView.as_view(), name="company-create"),
