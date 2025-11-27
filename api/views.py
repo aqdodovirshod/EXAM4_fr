@@ -20,7 +20,8 @@ from .serializers import (
     CompanyWithVacanciesSerializer,
     EmployerProfileSerializer,
     SeekerProfileSerializer,
-    VacancyCreateSerializer
+    VacancyCreateSerializer,
+    ApplicationCreateSerializer,
 )
 
 class CompanyDetailWithVacanciesView(generics.RetrieveAPIView):
@@ -129,7 +130,7 @@ class ResumeRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ApplicationCreateView(generics.CreateAPIView):
-    serializer_class = ApplicationSerializer
+    serializer_class = ApplicationCreateSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
