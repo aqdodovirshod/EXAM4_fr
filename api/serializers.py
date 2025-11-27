@@ -12,21 +12,42 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class VacancySerializer(serializers.ModelSerializer):
+class VacancyCreateSerializer(serializers.ModelSerializer):
     company_id = serializers.PrimaryKeyRelatedField(
         queryset=Company.objects.all(),
         source="company",
         write_only=True
     )
+
+    class Meta:
+        model = Vacancy
+        fields = [
+            "title",
+            "company_id",
+            "location",
+            "description",
+            "responsibilities",
+            "requirements",
+            "salary_from",
+            "salary_to",
+            "currency",
+            "show_salary",
+            "employment_type",
+            "work_format",
+            "experience_required",
+            "is_active",
+        ]
+
+class VacancySerializer(serializers.ModelSerializer):
     company = CompanySerializer(read_only=True)
     author = serializers.StringRelatedField(read_only=True)
     salary_display = serializers.SerializerMethodField()
+
     class Meta:
         model = Vacancy
         fields = [
             "id",
             "title",
-            "company_id",
             "company",
             "location",
             "description",
@@ -49,7 +70,6 @@ class VacancySerializer(serializers.ModelSerializer):
 
     def get_salary_display(self, obj):
         return obj.salary_display()
-
 
 class ResumeSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)

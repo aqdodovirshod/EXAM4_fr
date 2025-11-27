@@ -19,6 +19,7 @@ from .serializers import (
     CompanyWithVacanciesSerializer,
     EmployerProfileSerializer,
     SeekerProfileSerializer,
+    VacancyCreateSerializer
 )
 
 class CompanyDetailWithVacanciesView(generics.RetrieveAPIView):
@@ -39,9 +40,13 @@ class UserProfileView(APIView):
 
 
 class VacancyListCreateView(generics.ListCreateAPIView):
-    queryset = Vacancy.objects.order_by("-created_at")  
-    serializer_class = VacancySerializer
+    queryset = Vacancy.objects.order_by("-created_at")
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return VacancyCreateSerializer
+        return VacancySerializer
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -63,7 +68,6 @@ class VacancyListCreateView(generics.ListCreateAPIView):
         if self.request.user.role != 'employer':
             raise PermissionDenied("Only employers can create vacancies")
         serializer.save(author=self.request.user)
-
 
 class VacancyRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Vacancy.objects.all()
@@ -159,3 +163,10 @@ class CompanyListView(generics.ListAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanyWithVacanciesSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+class CompanyCreateView(generics.CreateAPIView):
+    queryset = Company.objects.all()
+    serializer_class = CompanyWithVacanciesSerializer  
+    permission_classes = [IsAuthenticated]  
+
+
