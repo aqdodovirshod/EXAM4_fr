@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vacancy, Resume, Application, FavoriteVacancy, Company
+from .models import Vacancy, Resume, Application, Company
 
 @admin.register(Vacancy)
 class VacancyAdmin(admin.ModelAdmin):
@@ -18,11 +18,6 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_display = ("applicant", "vacancy", "status", "applied_at")
     list_filter = ("status",)
     search_fields = ("applicant__username", "vacancy__title")
-
-@admin.register(FavoriteVacancy)
-class FavoriteVacancyAdmin(admin.ModelAdmin):
-    list_display = ("user", "vacancy", "added_at")
-    search_fields = ("user__username", "vacancy__title")
 
 @admin.register(Company)
 class CompanyAdmin(admin.ModelAdmin):

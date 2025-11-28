@@ -1,16 +1,13 @@
 from rest_framework import serializers
-from .models import Company, Vacancy, Resume, Application, FavoriteVacancy
+from .models import Company, Vacancy, Resume, Application
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-
-
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = "__all__"
-
 
 class VacancyCreateSerializer(serializers.ModelSerializer):
     company_id = serializers.PrimaryKeyRelatedField(
@@ -119,29 +116,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "applied_at",
             "updated_at",
         ]
-
-
-class FavoriteVacancySerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
-    vacancy = VacancySerializer(read_only=True)
-    vacancy_id = serializers.PrimaryKeyRelatedField(
-        queryset=Vacancy.objects.all(), source="vacancy", write_only=True
-    )
-
-    class Meta:
-        model = FavoriteVacancy
-        fields = ["id", "user", "vacancy", "vacancy_id", "added_at"]
-
-
-class FavoriteListSerializer(serializers.ModelSerializer):
-    vacancy = VacancySerializer(read_only=True)
-    class Meta:
-        model = FavoriteVacancy
-        fields = ["id", "vacancy", "added_at"]
-
-
-class FavoriteToggleResponseSerializer(serializers.Serializer):
-    message = serializers.CharField()
 
 
 class CompanyWithVacanciesSerializer(serializers.ModelSerializer):

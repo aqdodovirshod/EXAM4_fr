@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import Company
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
-from .models import Vacancy, Resume, Application, FavoriteVacancy
+from .models import Vacancy, Resume
 
 from rest_framework import viewsets
 
@@ -15,8 +15,6 @@ from .serializers import (
     VacancySerializer, 
     ResumeSerializer, 
     ApplicationSerializer,
-    FavoriteToggleResponseSerializer,
-    FavoriteListSerializer,
     CompanyWithVacanciesSerializer,
     EmployerProfileSerializer,
     SeekerProfileSerializer,
@@ -138,35 +136,6 @@ class ApplicationCreateView(generics.CreateAPIView):
             raise PermissionDenied("Only seekers can apply for vacancies")
         vacancy = get_object_or_404(Vacancy, id=self.kwargs["vacancy_id"])
         serializer.save(applicant=self.request.user, vacancy=vacancy)
-
-
-class FavoriteVacancyToggleView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = FavoriteToggleResponseSerializer
-
-    def get_serializer(self, *args, **kwargs):
-        if getattr(self, 'swagger_fake_view', False):
-            return FavoriteToggleResponseSerializer()
-        return super().get_serializer(*args, **kwargs)
-
-    def post(self, request, vacancy_id):
-        if request.user.role != 'seeker':
-            raise PermissionDenied("Only seekers can add vacancies to favorites")
-        vacancy = get_object_or_404(Vacancy, id=vacancy_id)
-        if FavoriteVacancy.is_favorited(request.user, vacancy):
-            FavoriteVacancy.objects.filter(user=request.user, vacancy=vacancy).delete()
-            return Response({"message": "Removed from favorites"}, status=status.HTTP_200_OK)
-        else:
-            FavoriteVacancy.objects.create(user=request.user, vacancy=vacancy)
-            return Response({"message": "Added to favorites"}, status=status.HTTP_201_CREATED)
-        
-
-class FavoriteVacancyListView(generics.ListAPIView):
-    serializer_class = FavoriteListSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return FavoriteVacancy.objects.filter(user=self.request.user)
 
 class CompanyListView(generics.ListAPIView):
     queryset = Company.objects.all()
