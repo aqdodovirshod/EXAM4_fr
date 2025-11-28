@@ -90,7 +90,7 @@ class Vacancy(models.Model):
         if self.salary_to:
             return f"до {self.salary_to} {self.currency}"
         return "Not specified"
-
+#Idontseechangesinserver
 
 
 class Resume(models.Model):
