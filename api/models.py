@@ -90,7 +90,6 @@ class Vacancy(models.Model):
         if self.salary_to:
             return f"до {self.salary_to} {self.currency}"
         return "Not specified"
-#Idontseechangesinserver
 
 
 class Resume(models.Model):
@@ -167,3 +166,21 @@ class Application(models.Model):
     def mark_rejected(self):
         self.status = "rejected"
         self.save(update_fields=["status", "updated_at"])
+
+class FavoriteVacancy(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="favorites")
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name="favorited_by")
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "vacancy")
+        verbose_name = "Featured vacancy"
+        verbose_name_plural = "Featured vacancies"
+        ordering = ["-added_at"]
+
+    def __str__(self):
+        return f"{self.user} Favorites {self.vacancy.title}"
+
+    @staticmethod
+    def is_favorited(user, vacancy):
+        return FavoriteVacancy.objects.filter(user=user, vacancy=vacancy).exists()

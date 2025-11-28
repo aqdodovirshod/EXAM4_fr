@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from rest_framework.routers import DefaultRouter
 from .views import (
     VacancyListCreateView,
@@ -6,6 +6,9 @@ from .views import (
     ResumeListCreateView,
     ResumeRetrieveUpdateDeleteView,
     ApplicationCreateView,
+    FavoriteVacancyListView,
+    FavoriteVacancyToggleView,
+    FavoriteVacancyDeleteView,
     CompanyDetailWithVacanciesView,
     CompanyListView,
     CompanyCreateView,
@@ -21,6 +24,10 @@ urlpatterns = [
     path("resumes/<int:pk>/", ResumeRetrieveUpdateDeleteView.as_view(), name="resume-detail"),
 
     path("vacancies/<int:vacancy_id>/apply/", ApplicationCreateView.as_view(), name="application-create"),
+
+    path("vacancies/<int:vacancy_id>/favorite/", FavoriteVacancyToggleView.as_view(), name="favorite-toggle"),
+    path("favorites/", FavoriteVacancyListView.as_view(), name="favorite-list"),
+    path("vacancies/<int:vacancy_id>/favorite/delete/", FavoriteVacancyDeleteView.as_view(), name="favorite-delete"),
 
     path("companies/", CompanyListView.as_view(), name="company-list"),
     path("companies/create/", CompanyCreateView.as_view(), name="company-create"),
