@@ -56,40 +56,44 @@ class VacancySerializer(serializers.ModelSerializer):
     def get_salary_display(self, obj):
         return obj.salary_display()
 
+class ResumeCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating resumes - file is required"""
+    class Meta:
+        model = Resume
+        fields = [
+            "full_name",
+            "file",
+        ]
+
+
 class ResumeSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField(read_only=True)
+    """Serializer for reading resumes - only file_url"""
+    file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Resume
         fields = [
-            "id",
-            "user",
             "full_name",
-            "desired_position",
-            "location",
-            "phone",
-            "email",
-            "salary_expectation",
-            "experience_years",
-            "about",
-            "skills",
-            "is_active",
-            "created_at",
-            "updated_at",
             "file_url",
         ]
-    def get_file_url(self, obj):
-        return obj.file.url if obj.file else None
+        read_only_fields = ["file_url"]
 
+    def get_file_url(self, obj):
+        return obj.file_url
+
+
+
+class VacancyShortSerializer(serializers.ModelSerializer):
+    """Short vacancy info for applications"""
+    class Meta:
+        model = Vacancy
+        fields = ["id", "title", "company", "location"]
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
     applicant = serializers.StringRelatedField(read_only=True)
-    vacancy = serializers.StringRelatedField(read_only=True)
+    vacancy = VacancyShortSerializer(read_only=True)
     resume = ResumeSerializer(read_only=True)
-    resume_id = serializers.PrimaryKeyRelatedField(
-        queryset=Resume.objects.all(), source="resume", write_only=True, required=False
-    )
 
     class Meta:
         model = Application
@@ -98,7 +102,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "applicant",
             "vacancy",
             "resume",
-            "resume_id",
             "cover_letter",
             "status",
             "applied_at",
@@ -134,7 +137,7 @@ class ResumeShortSerializer(serializers.ModelSerializer):
         fields = ["full_name", "file_url"]
 
     def get_file_url(self, obj):
-        return obj.file.url if obj.file else None
+        return obj.file_url
 
 
 class ApplicationCompactSerializer(serializers.ModelSerializer):
@@ -150,8 +153,11 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
     resume_id = serializers.PrimaryKeyRelatedField(
         queryset=Resume.objects.all(),
         source="resume",
-        write_only=True
+        write_only=True,
+        required=False,
+        allow_null=True
     )
+    
     class Meta:
         model = Application
         fields = ["resume_id", "cover_letter"]

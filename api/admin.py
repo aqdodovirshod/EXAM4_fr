@@ -9,9 +9,8 @@ class VacancyAdmin(admin.ModelAdmin):
 
 @admin.register(Resume)
 class ResumeAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "desired_position", "location", "is_active")
-    list_filter = ("is_active", "location")
-    search_fields = ("full_name", "desired_position")
+    list_display = ("full_name", "user", "file")
+    search_fields = ("full_name", "user__username")
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):

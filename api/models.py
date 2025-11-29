@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import FileExtensionValidator
 from accounts.models import CustomUser
 
 
@@ -79,29 +80,19 @@ class Vacancy(models.Model):
 
 class Resume(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="resume")
-
     full_name = models.CharField("Full name", max_length=200)
-    desired_position = models.CharField("Desired position", max_length=200, db_index=True)
-    location = models.CharField("Location", max_length=150, blank=True, db_index=True)
-    phone = models.CharField("Phone", max_length=20, blank=True)
-    email = models.EmailField("Email", blank=True)
-
-    salary_expectation = models.DecimalField("Expected salary", max_digits=12, decimal_places=2, null=True, blank=True)
-    experience_years = models.PositiveSmallIntegerField("Years of experience", default=0)
-    about = models.TextField("About me", blank=True)
-    skills = models.CharField("Skills", max_length=300, blank=True)
-    is_active = models.BooleanField("Looking for job", default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    file = models.FileField(upload_to="resumes/", blank=True, null=True)
+    file = models.FileField(
+        upload_to="resumes/", 
+        validators=[FileExtensionValidator(allowed_extensions=['pdf', 'doc', 'docx'])],
+        help_text="Upload PDF or Word document (.pdf, .doc, .docx)"
+    )
 
     class Meta:
         verbose_name = "Resume"
         verbose_name_plural = "Resumes"
 
     def __str__(self):
-        return f"{self.full_name} – {self.desired_position}"
+        return self.full_name
     
     @property
     def file_url(self):
