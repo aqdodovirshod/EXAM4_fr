@@ -1,26 +1,15 @@
 from rest_framework import serializers
-from .models import Company, Vacancy, Resume, Application, FavoriteVacancy
+from .models import Vacancy, Resume, Application, FavoriteVacancy
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company
-        fields = "__all__"
-
 class VacancyCreateSerializer(serializers.ModelSerializer):
-    company_id = serializers.PrimaryKeyRelatedField(
-        queryset=Company.objects.all(),
-        source="company",
-        write_only=True
-    )
-
     class Meta:
         model = Vacancy
         fields = [
             "title",
-            "company_id",
+            "company",
             "location",
             "description",
             "responsibilities",
@@ -36,7 +25,6 @@ class VacancyCreateSerializer(serializers.ModelSerializer):
         ]
 
 class VacancySerializer(serializers.ModelSerializer):
-    company = CompanySerializer(read_only=True)
     author = serializers.StringRelatedField(read_only=True)
     salary_display = serializers.SerializerMethodField()
 
@@ -116,14 +104,6 @@ class ApplicationSerializer(serializers.ModelSerializer):
             "applied_at",
             "updated_at",
         ]
-
-
-class CompanyWithVacanciesSerializer(serializers.ModelSerializer):
-    vacancies = VacancySerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Company
-        fields = ["id", "name", "logo", "description", "website", "vacancies"]
 
 
 class EmployerProfileSerializer(serializers.ModelSerializer):

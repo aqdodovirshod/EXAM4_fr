@@ -20,8 +20,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data.pop("confirm_password") 
         user = CustomUser.objects.create_user(**validated_data)
         return user
-
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser

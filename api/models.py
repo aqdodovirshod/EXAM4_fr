@@ -2,22 +2,6 @@ from django.db import models
 from accounts.models import CustomUser
 
 
-class Company(models.Model):
-    name = models.CharField(max_length=200, unique=True, verbose_name="Company name")
-    logo = models.ImageField(upload_to="company_logos/", blank=True, null=True, verbose_name="Logo")
-    description = models.TextField(blank=True, verbose_name="Description")
-    website = models.URLField(blank=True, verbose_name="Website")
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Company"
-        verbose_name_plural = "Companies"
-
-    def __str__(self):
-        return self.name
-
 class Vacancy(models.Model):
     EMPLOYMENT_TYPE_CHOICES = [
         ("full_time", "Full-time"),
@@ -43,7 +27,7 @@ class Vacancy(models.Model):
     ]
 
     title = models.CharField("Job title", max_length=200, db_index=True)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="vacancies")
+    company = models.CharField("Company", max_length=200, blank=True)
     location = models.CharField("Location", max_length=150, db_index=True)
     description = models.TextField("Description")
     responsibilities = models.TextField("Responsibilities", blank=True)
@@ -74,7 +58,8 @@ class Vacancy(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.title} в {self.company.name}"
+        company_name = self.company if self.company else "Unknown Company"
+        return f"{self.title} в {company_name}"
 
     def increment_views(self):
         Vacancy.objects.filter(pk=self.pk).update(views=models.F("views") + 1)

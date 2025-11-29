@@ -9,9 +9,6 @@ from .views import (
     FavoriteVacancyListView,
     FavoriteVacancyToggleView,
     FavoriteVacancyDeleteView,
-    CompanyDetailWithVacanciesView,
-    CompanyListView,
-    CompanyCreateView,
     UserProfileView,
 )
 
@@ -29,8 +26,5 @@ urlpatterns = [
     path("favorites/", FavoriteVacancyListView.as_view(), name="favorite-list"),
     path("vacancies/<int:vacancy_id>/favorite/delete/", FavoriteVacancyDeleteView.as_view(), name="favorite-delete"),
 
-    path("companies/", CompanyListView.as_view(), name="company-list"),
-    path("companies/create/", CompanyCreateView.as_view(), name="company-create"),
-    path("companies/<int:pk>/profile/", CompanyDetailWithVacanciesView.as_view(), name="company-profile"),
     path("my-account/", UserProfileView.as_view(), name="user-profile"),
 ]

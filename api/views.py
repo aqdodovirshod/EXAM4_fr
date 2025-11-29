@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Company
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from .models import Vacancy, Resume, Application, FavoriteVacancy
@@ -17,16 +16,11 @@ from .serializers import (
     ApplicationSerializer,
     FavoriteToggleResponseSerializer,
     FavoriteListSerializer,
-    CompanyWithVacanciesSerializer,
     EmployerProfileSerializer,
     SeekerProfileSerializer,
     VacancyCreateSerializer,
     ApplicationCreateSerializer,
 )
-
-class CompanyDetailWithVacanciesView(generics.RetrieveAPIView):
-    queryset = Company.objects.all()
-    serializer_class = CompanyWithVacanciesSerializer
 
 
 class UserProfileView(APIView):
@@ -180,15 +174,4 @@ class FavoriteVacancyDeleteView(generics.DestroyAPIView):
             return Response({"message": "Not in favorites"}, status=status.HTTP_404_NOT_FOUND)
         favorite.delete()
         return Response({"message": "Deleted from favorites"}, status=status.HTTP_200_OK)
-
-class CompanyListView(generics.ListAPIView):
-    queryset = Company.objects.all()
-    serializer_class = CompanyWithVacanciesSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-class CompanyCreateView(generics.CreateAPIView):
-    queryset = Company.objects.all()
-    serializer_class = CompanyWithVacanciesSerializer  
-    permission_classes = [IsAuthenticated]  
-
 
