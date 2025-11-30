@@ -209,6 +209,27 @@ class ApplicationRejectView(APIView):
         )
 
 
+class ApplicationReviewView(APIView):
+    """Mark an application as reviewed"""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, application_id):
+        if request.user.role != 'employer':
+            raise PermissionDenied("Only employers can review applications")
+        
+        application = get_object_or_404(Application, id=application_id)
+        
+        # Check if application belongs to employer's vacancy
+        if application.vacancy.author != request.user:
+            raise PermissionDenied("You can only review applications for your own vacancies")
+        
+        application.mark_reviewed()
+        return Response(
+            {"message": "Application marked as reviewed", "status": application.status},
+            status=status.HTTP_200_OK
+        )
+
+
 class FavoriteVacancyToggleView(generics.GenericAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = FavoriteToggleResponseSerializer

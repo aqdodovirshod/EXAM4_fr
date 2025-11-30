@@ -8,6 +8,7 @@ from .views import (
     ApplicationListView,
     ApplicationAcceptView,
     ApplicationRejectView,
+    ApplicationReviewView,
     FavoriteVacancyListView,
     FavoriteVacancyToggleView,
     FavoriteVacancyDeleteView,
@@ -25,6 +26,7 @@ urlpatterns = [
     path("applications/", ApplicationListView.as_view(), name="application-list"),
     path("applications/<int:application_id>/accept/", ApplicationAcceptView.as_view(), name="application-accept"),
     path("applications/<int:application_id>/reject/", ApplicationRejectView.as_view(), name="application-reject"),
+    path("applications/<int:application_id>/review/", ApplicationReviewView.as_view(), name="application-review"),
 
     path("vacancies/<int:vacancy_id>/favorite/", FavoriteVacancyToggleView.as_view(), name="favorite-toggle"),
     path("favorites/", FavoriteVacancyListView.as_view(), name="favorite-list"),
