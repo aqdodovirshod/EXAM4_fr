@@ -5,14 +5,12 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import redirect
-
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Task Manager",
+        title="TajWorks",
         default_version='v1',
-        description="Task",
+        description="Job search and recruitment web service in Tajikistan",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@jobsearch.local"),
         license=openapi.License(name="BSD License"),

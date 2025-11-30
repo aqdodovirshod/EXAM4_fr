@@ -1,8 +1,8 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
 from .models import CustomUser
+from .tokens import CustomRefreshToken
 
 from .serializers import (
     RegisterSerializer,
@@ -29,7 +29,7 @@ class LoginAPIView(generics.GenericAPIView):
         user = authenticate(request, username=username, password=password)
 
         if user:
-            refresh_token = RefreshToken.for_user(user)
+            refresh_token = CustomRefreshToken.for_user(user)
             return Response({
                 "refresh": str(refresh_token),
                 "access": str(refresh_token.access_token)
@@ -48,11 +48,22 @@ class RefreshTokenAPIView(generics.GenericAPIView):
 
         token = serializer.validated_data["token"]
         try:
-            refresh_token = RefreshToken(token)
-            return Response({
-                "refresh": str(refresh_token),
-                "access": str(refresh_token.access_token)
-            }, status=status.HTTP_200_OK)
+            refresh_token = CustomRefreshToken(token)
+            # Get user from token to add role to new access token
+            user_id = refresh_token.get('user_id')
+            if user_id:
+                user = CustomUser.objects.get(id=user_id)
+                new_refresh_token = CustomRefreshToken.for_user(user)
+                return Response({
+                    "refresh": str(new_refresh_token),
+                    "access": str(new_refresh_token.access_token)
+                }, status=status.HTTP_200_OK)
+            else:
+                refresh_token = CustomRefreshToken(token)
+                return Response({
+                    "refresh": str(refresh_token),
+                    "access": str(refresh_token.access_token)
+                }, status=status.HTTP_200_OK)
         except Exception as err:
             return Response({"detail": str(err)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -67,7 +78,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
         token = serializer.validated_data["token"]
         try:
-            refresh_token = RefreshToken(token)
+            refresh_token = CustomRefreshToken(token)
             refresh_token.blacklist()
             return Response({"detail": "User logged out!"}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as err:
