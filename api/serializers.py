@@ -150,17 +150,9 @@ class ApplicationCompactSerializer(serializers.ModelSerializer):
         fields = ["id", "vacancy_id", "vacancy_title", "status", "updated_at", "resume"]
 
 class ApplicationCreateSerializer(serializers.ModelSerializer):
-    resume_id = serializers.PrimaryKeyRelatedField(
-        queryset=Resume.objects.all(),
-        source="resume",
-        write_only=True,
-        required=False,
-        allow_null=True
-    )
-    
     class Meta:
         model = Application
-        fields = ["resume_id", "cover_letter"]
+        fields = ["cover_letter"]
 
 
 
